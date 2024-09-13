@@ -16,6 +16,7 @@ import { visuallyHidden } from '@mui/utils';
 import AnalyticsIcon from '@mui/icons-material/Analytics';
 import Modal from './Modal';
 
+
 function createData(id, name, calories, fat, carbs, protein) {
   return {
     id,
@@ -59,10 +60,6 @@ function getComparator(order, orderBy) {
     : (a, b) => -descendingComparator(a, b, orderBy);
 }
 
-// Since 2020 all major browsers ensure sort stability with Array.prototype.sort().
-// stableSort() brings sort stability to non-modern browsers (notably IE11). If you
-// only support modern browsers you can replace stableSort(exampleArray, exampleComparator)
-// with exampleArray.slice().sort(exampleComparator)
 function stableSort(array, comparator) {
   const stabilizedThis = array.map((el, index) => [el, index]);
   stabilizedThis.sort((a, b) => {
@@ -77,31 +74,31 @@ function stableSort(array, comparator) {
 
 const headCells = [
   {
-    id: 'name',
+    id: 'ruc',
     numeric: false,
     disablePadding: true,
     label: 'RUC',
   },
   {
-    id: 'calories',
+    id: 'estado',
     numeric: true,
     disablePadding: false,
     label: 'Estado',
   },
   {
-    id: 'fat',
+    id: 'fecha',
     numeric: true,
     disablePadding: false,
     label: 'Fecha',
   },
   {
-    id: 'carbs',
+    id: 'codigo',
     numeric: true,
     disablePadding: false,
     label: 'Codigo de delito',
   },
   {
-    id: 'bla',
+    id: 'grupo',
     numeric: true,
     disablePadding: false,
     label: 'Grupo de delito',
@@ -125,15 +122,6 @@ function EnhancedTableHead(props) {
     <TableHead>
       <TableRow>
        <TableCell style={{ background: '#1976d2', color: '#ffffff', textAlign:'justify' }}>
-       {/*   <Checkbox
-            color="primary"
-            indeterminate={numSelected > 0 && numSelected < rowCount}
-            checked={rowCount > 0 && numSelected === rowCount}
-            onChange={onSelectAllClick}
-            inputProps={{
-              'aria-label': 'select all desserts',
-            }}
-          /> */}
         </TableCell> 
         {headCells.map((headCell) => (
           <TableCell
@@ -194,7 +182,10 @@ EnhancedTableToolbar.propTypes = {
   numSelected: PropTypes.number.isRequired,
 };
 
-export default function TableSearch() {
+export default function TableSearch(props) {
+
+  const {data} = props
+  console.log(data, "en la tabla")
   const [order, setOrder] = React.useState('asc');
   const [orderBy, setOrderBy] = React.useState('calories');
   const [selected, setSelected] = React.useState([]);
@@ -296,22 +287,12 @@ export default function TableSearch() {
                 return (
                   <TableRow
                     hover
-                    onClick={(event) => handleClick(event, row.id)}
-                    role="checkbox"
-                    aria-checked={isItemSelected}
                     tabIndex={-1}
                     key={row.id}
                     selected={isItemSelected}
                     sx={{ cursor: 'pointer' }}
                   >
                     <TableCell >
-                 {/*      <Checkbox
-                        color="primary"
-                        checked={isItemSelected}
-                        inputProps={{
-                          'aria-labelledby': labelId,
-                        }}
-                      /> */}
                     </TableCell>
                     <TableCell
                       component="th"

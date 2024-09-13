@@ -1,5 +1,5 @@
 
-import * as React from 'react';
+import React,{useState, useRef } from 'react';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -15,6 +15,8 @@ import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { deepOrange} from '@mui/material/colors';
 import { useNavigate } from 'react-router-dom';
+import { API_URL } from '../api';
+import axios from 'axios';
 
 function Copyright(props) {
   return (
@@ -35,19 +37,44 @@ const defaultTheme = createTheme();
 
 export default function SignIn() {
 
-    const navigate = useNavigate();
-
-    const goToAbout = () => {
+  const navigate = useNavigate();
+  const goToAbout = () => {
       navigate('/home');
     };
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get('email'),
-      password: data.get('password'),
+  const [formData, setFormData] = useState({ username: '', password: '' });
+  const toast = useRef(null);
+
+  const showError = () => {
+    toast.current.show({ severity: 'error', summary: 'Error', detail: 'Usuario y/o contraseña invalidos' });
+  };
+
+  const showLogin = () => {
+    toast.current.show({ severity: 'error', summary: 'Error', detail: 'Favor de ingresar usuario y contraseña' });
+  };
+  
+  const handleInputChange = (e) => {
+    const { id, value } = e.target;
+    setFormData({ ...formData, [id]: value });
+  };
+
+  /* api login mas JWT*/
+  const handleLogin = async () => {
+    try {
+      const response = await axios.post(`${API_URL}token`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+      },
     });
-    goToAbout()
+      const jwtToken  = response.data;
+      //console.log(jwtToken)
+      localStorage.setItem('jwtToken',JSON.stringify(jwtToken));
+
+      goToAbout()
+
+    } catch (error) {
+      console.log("falle")
+      showError('Usuario y/o contraseña invalidos')
+    }
   };
 
   return (
@@ -68,33 +95,30 @@ export default function SignIn() {
           <Typography component="h1" variant="h5">
             Sitio CENIA
           </Typography>
-          <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
+          <Box /* component="form" onSubmit={handleSubmit}  */ noValidate sx={{ mt: 1 }}>
             <TextField
               margin="normal"
               required
               fullWidth
-              id="email"
+              id="username"
               label="Usuario"
-              name="email"
-              autoComplete="email"
+              onChange={handleInputChange}
               autoFocus
             />
             <TextField
               margin="normal"
               required
               fullWidth
-              name="password"
               label="Contraseña"
-              type="password"
               id="password"
-              autoComplete="current-password"
+              onChange={handleInputChange}
             />
             <FormControlLabel
               control={<Checkbox value="remember" color="primary" />}
               label="Recordarme"
             />
             <Button
-              type="submit"
+              onClick={handleLogin} 
               fullWidth
               variant="contained"
               sx={{ mt: 3, mb: 2 }}

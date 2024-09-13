@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React,{useState, useEffect, useRef } from 'react';
 import { styled, createTheme, ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import MuiDrawer from '@mui/material/Drawer';
@@ -30,6 +30,8 @@ import LocationSearchingIcon from '@mui/icons-material/LocationSearching';
 import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 import Fiscalia from './fiscaliacentrada.png';
 import InfoGeo from './InfoGeo';
+import { API_URL } from '../api';
+import axios from 'axios';
 
 
 function Copyright(props) {
@@ -100,8 +102,48 @@ const defaultTheme = createTheme();
 export default function Home() {
   const [open, setOpen] = React.useState(true);
   const [route, setRoute] = React.useState(false);
-
+  const [token, setToken] = React.useState('');
+  const [fiscaliaService, setFiscaliaService] = useState("")
+  const [dataCausas, setDataCausas] = useState("")
+  const toast = useRef(null);
+  const dataLogin = JSON.parse(localStorage.getItem('jwtToken'));
+  
+  console.log(token)
+  console.log(fiscaliaService)
   const navigate = useNavigate();
+
+ useEffect(() => {
+    if (dataLogin !== '') {
+      setToken(dataLogin.access_token)
+      setFiscaliaService(dataLogin.fiscalia)
+    }
+}, [dataLogin]);
+
+useEffect(() => {
+  if (token !== '') {
+    handleTableDate()
+  }
+}, [token]);
+
+const date ={
+  fiscalia: fiscaliaService
+}
+
+const handleTableDate = async () => {
+  try {
+    const response = await axios.post(`${API_URL}get_causas`, date, {
+      headers: {
+        Authorization: `Bearer ${token}` 
+    },
+  });
+    const data = response.data;
+    setDataCausas(data)
+    console.log(data)
+   
+  } catch (error) {
+    console.log("falle")
+  }
+};
 
   const handleRedirectionSearch =() =>{
     /* navigate('/home'); */
@@ -203,7 +245,7 @@ export default function Home() {
           <Container maxWidth="false" sx={{ mt: 4, ml: 2, mr: 2, bgcolor: "#FFFFFF", width: "98%" }}>
 
 
-            {route === false ? <Search /> : <InfoGeo/>}
+            {route === false ? <Search data={dataCausas} token={token} /> : <InfoGeo/>}
             <Copyright sx={{ pt: 4 }} />
           </Container>
         </Box>
