@@ -245,7 +245,7 @@ const handleTableDate = async () => {
           <Container maxWidth="false" sx={{ mt: 4, ml: 2, mr: 2, bgcolor: "#FFFFFF", width: "98%" }}>
 
 
-            {route === false ? <Search data={dataCausas} token={token} /> : <InfoGeo/>}
+            {route === false ? <Search data={dataCausas} token={token} fiscalia={fiscaliaService}/> : <InfoGeo/>}
             <Copyright sx={{ pt: 4 }} />
           </Container>
         </Box>
