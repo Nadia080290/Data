@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useState, useEffect, } from 'react';
 import PropTypes from 'prop-types';
 import { alpha } from '@mui/material/styles';
 import Box from '@mui/material/Box';
@@ -17,32 +17,6 @@ import AnalyticsIcon from '@mui/icons-material/Analytics';
 import Modal from './Modal';
 
 
-function createData(id, name, calories, fat, carbs, protein) {
-  return {
-    id,
-    name,
-    calories,
-    fat,
-    carbs,
-    protein,
-  };
-}
-
-const rows = [
-  createData(1, '1200000774-5', "Clasificado", "23-06-2024", 67, 4.3),
-  createData(2, '1200000774-5', "Clasificado", "23-06-2024", 51, 4.9),
-  createData(3, '1200000774-5', "Clasificado", "23-06-2024", 24, 6.0),
-  createData(4, '1200000774-5', "Clasificado", "23-06-2024", 24, 4.0),
-  createData(5, '1200000774-5', "Clasificado", "23-06-2024", 49, 3.9),
-  createData(6, '1200000774-5', "Clasificado", "23-06-2024", 87, 6.5),
-  createData(7, '1200000774-5', "Clasificado", "23-06-2024", 37, 4.3),
-  createData(8, '1200000774-5', "Clasificado", "23-06-2024", 94, 0.0),
-  createData(9, '1200000774-5', "Clasificado", "23-06-2024", 65, 7.0),
-  createData(10, '1200000774-5', "Clasificado", "23-06-2024", 98, 0.0),
-  createData(11, '1200000774-5', "Clasificado", "23-06-2024", 81, 2.0),
-  createData(12, '1200000774-5', "Clasificado", "23-06-2024", 9, 37.0),
-  createData(13, '1200000774-5', "Clasificado", "23-06-2024", 63, 4.0),
-];
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -92,19 +66,19 @@ const headCells = [
     label: 'Fecha',
   },
   {
-    id: 'codigo',
+    id: 'codigo_delito',
     numeric: true,
     disablePadding: false,
     label: 'Codigo de delito',
   },
   {
-    id: 'grupo',
+    id: 'grupo_delito',
     numeric: true,
     disablePadding: false,
     label: 'Grupo de delito',
   },
   {
-    id: 'protein',
+    id: 'accionn',
     numeric: true,
     disablePadding: false,
     label: 'Acciones',
@@ -184,8 +158,9 @@ EnhancedTableToolbar.propTypes = {
 
 export default function TableSearch(props) {
 
-  const {data} = props
+  const {data,fiscaliaService, token} = props
   console.log(data, "en la tabla")
+  const [dataTabla, setDataTabla] = React.useState(data ? data : [])
   const [order, setOrder] = React.useState('asc');
   const [orderBy, setOrderBy] = React.useState('calories');
   const [selected, setSelected] = React.useState([]);
@@ -193,8 +168,18 @@ export default function TableSearch(props) {
   const [dense, setDense] = React.useState(false);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [openModal, setOpenModal] = React.useState(false);
+  const [causaElegida, setDataCausasElegida] = React.useState("");
 
-  const handleClickOpen = () => {
+
+   /* useEffect(() => {
+        if (data.length > 0) {
+            setDataTabla(data)
+        }
+    }, [data]);
+ */
+
+  const handleClickOpen = (row) => {
+    setDataCausasElegida(row)
     setOpenModal(true);
   };
 
@@ -209,31 +194,13 @@ export default function TableSearch(props) {
 
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
-      const newSelected = rows.map((n) => n.id);
+      const newSelected = dataTabla.map((n) => n.id);
       setSelected(newSelected);
       return;
     }
     setSelected([]);
   };
 
-  const handleClick = (event, id) => {
-    const selectedIndex = selected.indexOf(id);
-    let newSelected = [];
-
-    if (selectedIndex === -1) {
-      newSelected = newSelected.concat(selected, id);
-    } else if (selectedIndex === 0) {
-      newSelected = newSelected.concat(selected.slice(1));
-    } else if (selectedIndex === selected.length - 1) {
-      newSelected = newSelected.concat(selected.slice(0, -1));
-    } else if (selectedIndex > 0) {
-      newSelected = newSelected.concat(
-        selected.slice(0, selectedIndex),
-        selected.slice(selectedIndex + 1),
-      );
-    }
-    setSelected(newSelected);
-  };
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -248,11 +215,11 @@ export default function TableSearch(props) {
 
   // Avoid a layout jump when reaching the last page with empty rows.
   const emptyRows =
-    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
+    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - dataTabla.length) : 0;
 
   const visibleRows = React.useMemo(
     () =>
-      stableSort(rows, getComparator(order, orderBy)).slice(
+      stableSort(dataTabla, getComparator(order, orderBy)).slice(
         page * rowsPerPage,
         page * rowsPerPage + rowsPerPage,
       ),
@@ -276,7 +243,7 @@ export default function TableSearch(props) {
               orderBy={orderBy}
               onSelectAllClick={handleSelectAllClick}
               onRequestSort={handleRequestSort}
-              rowCount={rows.length}
+              rowCount={dataTabla.length}
               
             />
             <TableBody>
@@ -300,13 +267,13 @@ export default function TableSearch(props) {
                       scope="row"
                       padding="none"
                     >
-                      {row.name}
+                      {row.ruc}
                     </TableCell>
-                    <TableCell align="right">{row.calories}</TableCell>
-                    <TableCell align="right">{row.fat}</TableCell>
-                    <TableCell align="right">{row.carbs}</TableCell>
-                    <TableCell align="right">{row.carbs}</TableCell>
-                    <TableCell align="right"><AnalyticsIcon sx={{color: "#FA7900"}} onClick={handleClickOpen}/></TableCell>
+                    <TableCell align="right">{row.estado}</TableCell>
+                    <TableCell align="right">{row.fecha}</TableCell>
+                    <TableCell align="right">{row.codigo_delito}</TableCell>
+                    <TableCell align="right">{row.grupo_delito}</TableCell>
+                    <TableCell align="right"><AnalyticsIcon sx={{color: "#FA7900"}} onClick={() =>handleClickOpen(row)}/></TableCell>
                   </TableRow>
                 );
               })}
@@ -325,14 +292,14 @@ export default function TableSearch(props) {
         <TablePagination
           rowsPerPageOptions={[5, 10, 25]}
           component="div"
-          count={rows.length}
+          count={dataTabla.length}
           rowsPerPage={rowsPerPage}
           page={page}
           onPageChange={handleChangePage}
           onRowsPerPageChange={handleChangeRowsPerPage}
         />
       </Paper>
-      <Modal open={openModal} close={handleClose}/>
+      <Modal open={openModal} close={handleClose} data={causaElegida} fiscaliaService={fiscaliaService} token={token}/>
     </Box>
   );
 }

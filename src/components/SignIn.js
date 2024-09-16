@@ -17,6 +17,7 @@ import { deepOrange} from '@mui/material/colors';
 import { useNavigate } from 'react-router-dom';
 import { API_URL } from '../api';
 import axios from 'axios';
+import Swal from 'sweetalert2';
 
 function Copyright(props) {
   return (
@@ -42,16 +43,6 @@ export default function SignIn() {
       navigate('/home');
     };
   const [formData, setFormData] = useState({ username: '', password: '' });
-  const toast = useRef(null);
-
-  const showError = () => {
-    toast.current.show({ severity: 'error', summary: 'Error', detail: 'Usuario y/o contraseña invalidos' });
-  };
-
-  const showLogin = () => {
-    toast.current.show({ severity: 'error', summary: 'Error', detail: 'Favor de ingresar usuario y contraseña' });
-  };
-  
   const handleInputChange = (e) => {
     const { id, value } = e.target;
     setFormData({ ...formData, [id]: value });
@@ -73,7 +64,13 @@ export default function SignIn() {
 
     } catch (error) {
       console.log("falle")
-      showError('Usuario y/o contraseña invalidos')
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: 'Usuario y/o contraseña invalidos',
+       
+      });
+    
     }
   };
 
@@ -127,9 +124,9 @@ export default function SignIn() {
             </Button>
             <Grid container>
              {/*  <Grid item xs> */}
-                <Link href="#" variant="body2">
+               {/*  <Link href="#" variant="body2">
                   ¿Olvidaste tu contraseña?
-                </Link>
+                </Link> */}
              {/*  </Grid> */}
               {/* <Grid item>
                 <Link href="#" variant="body2">

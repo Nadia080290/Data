@@ -125,25 +125,25 @@ useEffect(() => {
   }
 }, [token]);
 
-const date ={
-  fiscalia: fiscaliaService
-}
 
 const handleTableDate = async () => {
+  const fiscalia ={
+    fiscalia: fiscaliaService
+  }
   try {
-    const response = await axios.post(`${API_URL}get_causas`, date, {
+    const response = await axios.post(`${API_URL}get_causas`, fiscalia, {
       headers: {
         Authorization: `Bearer ${token}` 
     },
   });
     const data = response.data;
     setDataCausas(data)
-    console.log(data)
    
   } catch (error) {
     console.log("falle")
   }
 };
+
 
   const handleRedirectionSearch =() =>{
     /* navigate('/home'); */
@@ -245,7 +245,7 @@ const handleTableDate = async () => {
           <Container maxWidth="false" sx={{ mt: 4, ml: 2, mr: 2, bgcolor: "#FFFFFF", width: "98%" }}>
 
 
-            {route === false ? <Search data={dataCausas} token={token} fiscalia={fiscaliaService}/> : <InfoGeo/>}
+            {route === false ? <Search data={dataCausas} token={token} fiscaliaService={fiscaliaService}/> : <InfoGeo/>}
             <Copyright sx={{ pt: 4 }} />
           </Container>
         </Box>
