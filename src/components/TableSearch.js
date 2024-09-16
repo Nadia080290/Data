@@ -160,7 +160,8 @@ export default function TableSearch(props) {
 
   const {data,fiscaliaService, token} = props
   console.log(data, "en la tabla")
-  const [dataTabla, setDataTabla] = React.useState(data ? data : [])
+  const [dataTabla, setDataTabla] = React.useState([])
+  console.log(dataTabla,"tenemos dataaa")
   const [order, setOrder] = React.useState('asc');
   const [orderBy, setOrderBy] = React.useState('calories');
   const [selected, setSelected] = React.useState([]);
@@ -171,12 +172,20 @@ export default function TableSearch(props) {
   const [causaElegida, setDataCausasElegida] = React.useState("");
 
 
-   /* useEffect(() => {
+   useEffect(() => {
         if (data.length > 0) {
+          setTimeout(() => {
             setDataTabla(data)
+          }, 1000)
+          setTimeout(() => {
+            setDataTabla(data)
+          }, 3000)
+          setTimeout(() => {
+            setDataTabla(data)
+          }, 5000)
         }
     }, [data]);
- */
+ 
 
   const handleClickOpen = (row) => {
     setDataCausasElegida(row)
@@ -227,9 +236,11 @@ export default function TableSearch(props) {
   );
 
   return (
+
     <Box sx={{ width: '95%', ml:2, mt: 4}}>
       <Paper sx={{ width: '100%', mb: 2 }}>
         <EnhancedTableToolbar numSelected={selected.length} />
+       
         <TableContainer>
           <Table
             sx={{ minWidth: 750 }}

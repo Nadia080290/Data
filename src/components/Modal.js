@@ -16,18 +16,18 @@ import axios from 'axios';
 
 export default function Modal(props) {
     const { data, close, open, fiscaliaService, token } = props
-    console.log(data)
-    console.log(data.entidades)
     const [fullWidth, setFullWidth] = React.useState(true);
     const [maxWidth, setMaxWidth] = React.useState('lg');
     const [option, setOption] = React.useState(false);
     const [preclasificación, setPreclasificacion] =React.useState([])
     const [preclasificaciónOption, setPreclasificacionOption] =React.useState("")
     const [comentarios, setComentarios] = React.useState("")
+    const [dataEspecifica, setDataEspecifica] = React.useState(null)
 
     useEffect(() => {
         if (data != "") {
             handleDataPreclasificacion()
+            setDataEspecifica(data)
         }
     }, [data]);
 
@@ -37,10 +37,10 @@ export default function Modal(props) {
 
     const handleDataRuc = async () => {
         const diccionario = {
-            ruc: data.ruc,
+            ruc: dataEspecifica?.ruc,
             update_dicc: {
             precla: preclasificaciónOption,
-            comentario: comentarios
+            comentarios: comentarios
         }
         }
         try {
@@ -90,7 +90,7 @@ export default function Modal(props) {
      };
 
     return (
-        <React.Fragment>
+        <>
             <Dialog
                 open={open}
                 onClose={close}
@@ -119,26 +119,25 @@ export default function Modal(props) {
                             <Grid item xs={6}>
                                 <Button variant="contained" /* onClick={() => handleOption(false)}  */>Descargar</Button>
                                 <TextField
-                                    id="outlined-basic"
+                                  
                                     label="Relato de la victima"
                                     variant="outlined"
                                     multiline
                                     disabled
-                                    value={data.relato}
+                                    value={dataEspecifica?.relato}
                                     sx={{ width: " 90%", mt: 2, mb: 2 }}
                                 />
                                 <Stack direction="row" spacing={1}>
-                                <Chip label={data.entidades[0]} color="primary" />
+                                <Chip label={dataEspecifica?.entidades[0]} color="primary" />
                                     
                                 </Stack>
 
                                 <TextField
-                                    id="outlined-basic"
                                     label="Codigo del delito"
                                     variant="outlined"
                                     sx={{ width: " 90%", mt: 2 }}
                                     disabled
-                                    value={data.codigo_delito}
+                                    value={dataEspecifica?.codigo_delito}
                                 />
 
                             </Grid>
@@ -151,17 +150,9 @@ export default function Modal(props) {
                                     variant="outlined"
                                     disabled
                                     sx={{ mb: 2, width: "100%" }}
-                                    value={data.sug_precla}
+                                    value={dataEspecifica?.sug_precla}
                                 />
 
-                                {/*   <Autocomplete
-                                    disablePortal
-                                    id="combo-box-demo"
-                                    options={top100Films}
-                                    sx={{ mb: 2 }}
-                                    renderInput={(params) => <TextField {...params} label="Curso de acción" />}
-
-                                /> */}
                                 <Stack spacing={2} direction="row" justifyContent="flex-end">
                                     <Button variant="outlined" onClick={() => handleOption(true)}>Rechazar</Button>
                                     <Button variant="contained" onClick={() => handleOption(false)} >Aceptar</Button>
@@ -213,6 +204,6 @@ export default function Modal(props) {
           </Button>
         </DialogActions>  */}
             </Dialog>
-        </React.Fragment>
+        </>
     );
 }

@@ -104,8 +104,6 @@ export default function Home() {
   const [route, setRoute] = React.useState(false);
   const [token, setToken] = React.useState('');
   const [fiscaliaService, setFiscaliaService] = useState("")
-  const [dataCausas, setDataCausas] = useState("")
-  const toast = useRef(null);
   const dataLogin = JSON.parse(localStorage.getItem('jwtToken'));
   
   console.log(token)
@@ -119,30 +117,11 @@ export default function Home() {
     }
 }, [dataLogin]);
 
-useEffect(() => {
+/* useEffect(() => {
   if (token !== '') {
     handleTableDate()
   }
-}, [token]);
-
-
-const handleTableDate = async () => {
-  const fiscalia ={
-    fiscalia: fiscaliaService
-  }
-  try {
-    const response = await axios.post(`${API_URL}get_causas`, fiscalia, {
-      headers: {
-        Authorization: `Bearer ${token}` 
-    },
-  });
-    const data = response.data;
-    setDataCausas(data)
-   
-  } catch (error) {
-    console.log("falle")
-  }
-};
+}, [token]); */
 
 
   const handleRedirectionSearch =() =>{
@@ -245,7 +224,7 @@ const handleTableDate = async () => {
           <Container maxWidth="false" sx={{ mt: 4, ml: 2, mr: 2, bgcolor: "#FFFFFF", width: "98%" }}>
 
 
-            {route === false ? <Search data={dataCausas} token={token} fiscaliaService={fiscaliaService}/> : <InfoGeo/>}
+            {route === false ? <Search token={token} fiscaliaService={fiscaliaService}/> : <InfoGeo/>}
             <Copyright sx={{ pt: 4 }} />
           </Container>
         </Box>

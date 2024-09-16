@@ -30,14 +30,15 @@ const Item = styled(Paper)(({ theme }) => ({
 
 export default function Search(props) {
 
-    const {data, token, fiscaliaService } = props
+    const {token, fiscaliaService } = props
     const [value, setValue] = React.useState(dayjs());
     const [ruc, setRuc] = useState("")
     const [grupoDelitos, setGrupoDelitos] = useState([])
     const [grupoDelitosOption, setGrupoDelitosOption] = useState("")
     const [estados, setEstados] = useState([])
     const [estadosOption, setEstadosOption] = useState("")
-    const fechaFormato = dayjs(value).format("YYYY-MM-DD")
+    const [fecha, setFecha] = useState(null)
+    const [dataCausas, setDataCausas] = useState("")
 
     const config = {
         headers: { Authorization: `Bearer ${token}` },
@@ -47,8 +48,27 @@ export default function Search(props) {
         if (token !== '') {
             handleDataEstados()
             handleDataGruposDelitos()
+            handleTableDate()
         }
     }, [token]);
+
+    const handleTableDate = async () => {
+        const fiscalia ={
+          fiscalia: fiscaliaService
+        }
+        try {
+          const response = await axios.post(`${API_URL}get_causas`, fiscalia, {
+            headers: {
+              Authorization: `Bearer ${token}` 
+          },
+        });
+          const data = response.data;
+          setDataCausas(data)
+         
+        } catch (error) {
+          console.log("falle")
+        }
+      };
 
 
 
@@ -84,7 +104,7 @@ export default function Search(props) {
             fiscalia: fiscaliaService,
             grupo_delitos: grupoDelitosOption,
             estado: estadosOption,
-            fecha: fechaFormato,
+            fecha: fecha,
     
         }
         try {
@@ -108,10 +128,18 @@ export default function Search(props) {
 
     }
     const handleChangeRuc = (newValue) => {
-         console.log(newValue)
          setRuc(newValue)
   
-      }
+    }
+    const handleChangeFecha = (newValue) => {
+        console.log(newValue)
+        setValue(newValue)
+        const fechaFormato = dayjs(newValue).format("YYYY-MM-DD")
+        setFecha(fechaFormato)
+        
+ 
+     }
+
 
     return (
 
@@ -170,7 +198,7 @@ export default function Search(props) {
                             sx={{ width: "100%" }}
                             label="Fecha"
                             value={value}
-                            onChange={(newValue) => setValue(newValue)}
+                            onChange={handleChangeFecha}
                         />
                     </LocalizationProvider>
                 </Grid>
@@ -183,7 +211,7 @@ export default function Search(props) {
                 </Grid>
             </Grid>
 
-           <TableSearch data={data} fiscaliaService={fiscaliaService} token={token}/> 
+           <TableSearch data={dataCausas} fiscaliaService={fiscaliaService} token={token}/> 
         </div>
 
     );
