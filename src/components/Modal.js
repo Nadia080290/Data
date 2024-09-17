@@ -25,7 +25,7 @@ export default function Modal(props) {
     const [maxWidth, setMaxWidth] = React.useState('lg'); */
     const [option, setOption] = React.useState(false);
     const [preclasificación, setPreclasificacion] = React.useState([])
-    const [preclasificaciónOption, setPreclasificacionOption] = React.useState("")
+    const [preclasificaciónOption, setPreclasificacionOption] = React.useState()
     const [comentarios, setComentarios] = React.useState("")
     const [dataEspecifica, setDataEspecifica] = React.useState(null)
 
@@ -46,7 +46,8 @@ export default function Modal(props) {
     useEffect(() => {
         if (data != "") {
             handleDataPreclasificacion()
-            setDataEspecifica(data)            
+            setDataEspecifica(data) 
+            setPreclasificacionOption(data.sug_precla)           
         } 
     }, [data]);
 
