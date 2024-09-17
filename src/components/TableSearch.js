@@ -15,6 +15,8 @@ import Paper from '@mui/material/Paper';
 import { visuallyHidden } from '@mui/utils';
 import AnalyticsIcon from '@mui/icons-material/Analytics';
 import Modal from './Modal';
+import { API_URL } from '../api';
+import axios from 'axios';
 
 
 
@@ -160,7 +162,7 @@ export default function TableSearch(props) {
 
   const {data,fiscaliaService, token} = props
   console.log(data, "en la tabla")
-  const [dataTabla, setDataTabla] = React.useState([])
+  const [dataTabla, setDataTabla] = React.useState(data ? data : [])
   console.log(dataTabla,"tenemos dataaa")
   const [order, setOrder] = React.useState('asc');
   const [orderBy, setOrderBy] = React.useState('calories');
@@ -172,19 +174,11 @@ export default function TableSearch(props) {
   const [causaElegida, setDataCausasElegida] = React.useState("");
 
 
-   useEffect(() => {
-        if (data.length > 0) {
-          setTimeout(() => {
-            setDataTabla(data)
-          }, 1000)
-          setTimeout(() => {
-            setDataTabla(data)
-          }, 3000)
-          setTimeout(() => {
-            setDataTabla(data)
-          }, 5000)
+ /*   useEffect(() => {
+        if (data.length >= 0) {
+          setDataTabla(data)
         }
-    }, [data]);
+    }, [data]); */
  
 
   const handleClickOpen = (row) => {
@@ -240,7 +234,6 @@ export default function TableSearch(props) {
     <Box sx={{ width: '95%', ml:2, mt: 4}}>
       <Paper sx={{ width: '100%', mb: 2 }}>
         <EnhancedTableToolbar numSelected={selected.length} />
-       
         <TableContainer>
           <Table
             sx={{ minWidth: 750 }}

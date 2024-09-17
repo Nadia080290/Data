@@ -9,7 +9,7 @@ import Autocomplete from '@mui/material/Autocomplete';
 import dayjs, { Dayjs } from 'dayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { Button, FormControl, InputLabel, MenuItem, Select, Typography } from '@mui/material';
+import { Button, CircularProgress, FormControl, InputLabel, MenuItem, Select, Typography } from '@mui/material';
 import { API_URL } from '../api';
 import axios from 'axios';
 import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
@@ -31,13 +31,13 @@ const Item = styled(Paper)(({ theme }) => ({
 export default function Search(props) {
 
     const {token, fiscaliaService } = props
-    const [value, setValue] = React.useState(dayjs());
+    const [value, setValue] = React.useState(null);
     const [ruc, setRuc] = useState("")
     const [grupoDelitos, setGrupoDelitos] = useState([])
     const [grupoDelitosOption, setGrupoDelitosOption] = useState("")
     const [estados, setEstados] = useState([])
     const [estadosOption, setEstadosOption] = useState("")
-    const [fecha, setFecha] = useState(null)
+    const [fecha, setFecha] = useState("")
     const [dataCausas, setDataCausas] = useState("")
 
     const config = {
@@ -107,15 +107,16 @@ export default function Search(props) {
             fecha: fecha,
     
         }
+        console.log(dataSearch)
         try {
-            const response = await axios.post(`${API_URL}serach_rucs`, dataSearch, {
+            const response = await axios.post(`${API_URL}search_rucs`, dataSearch, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 },
             });
             const data = response.data;
-            //setDataCausasTabla(data)
-            console.log(data)
+            setDataCausas(data)
+            console.log(data, "SOY la respuesta!!")
 
         } catch (error) {
             console.log("falle")
@@ -127,8 +128,9 @@ export default function Search(props) {
         setEstadosOption(value)
 
     }
-    const handleChangeRuc = (newValue) => {
-         setRuc(newValue)
+    const handleChangeRuc = ({ target }) => {
+        const { name, value } = target;
+         setRuc(value)
   
     }
     const handleChangeFecha = (newValue) => {
@@ -211,7 +213,11 @@ export default function Search(props) {
                 </Grid>
             </Grid>
 
-           <TableSearch data={dataCausas} fiscaliaService={fiscaliaService} token={token}/> 
+          { dataCausas && 
+          <Box sx={{ display: 'flex' }}>
+          <CircularProgress />
+          </Box> &&
+          <TableSearch data={dataCausas} fiscaliaService={fiscaliaService} token={token}/> }
         </div>
 
     );

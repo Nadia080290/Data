@@ -5,7 +5,7 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
-import { Alert, Autocomplete, Divider, Grid, TextField } from '@mui/material';
+import { Alert, AlertTitle, Autocomplete, Divider, Grid, TextField } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
 import Stack from '@mui/material/Stack';
@@ -15,21 +15,32 @@ import axios from 'axios';
 
 
 export default function Modal(props) {
+
     const { data, close, open, fiscaliaService, token } = props
-    const [fullWidth, setFullWidth] = React.useState(true);
-    const [maxWidth, setMaxWidth] = React.useState('lg');
+    /* const [fullWidth, setFullWidth] = React.useState(true);
+    const [maxWidth, setMaxWidth] = React.useState('lg'); */
     const [option, setOption] = React.useState(false);
-    const [preclasificación, setPreclasificacion] =React.useState([])
-    const [preclasificaciónOption, setPreclasificacionOption] =React.useState("")
+    const [preclasificación, setPreclasificacion] = React.useState([])
+    const [preclasificaciónOption, setPreclasificacionOption] = React.useState("")
     const [comentarios, setComentarios] = React.useState("")
     const [dataEspecifica, setDataEspecifica] = React.useState(null)
+
+    useEffect(() => {
+        if (open) {
+            setTimeout(() => {
+                window.dispatchEvent(new Event('resize'));
+            }, 3000);
+        }
+    }, [open]);
 
     useEffect(() => {
         if (data != "") {
             handleDataPreclasificacion()
             setDataEspecifica(data)
         }
+        
     }, [data]);
+
 
     const config = {
         headers: { Authorization: `Bearer ${token}` },
@@ -39,9 +50,9 @@ export default function Modal(props) {
         const diccionario = {
             ruc: dataEspecifica?.ruc,
             update_dicc: {
-            precla: preclasificaciónOption,
-            comentarios: comentarios
-        }
+                precla: preclasificaciónOption,
+                comentarios: comentarios
+            }
         }
         try {
             const response = await axios.post(`${API_URL}update_ruc`, diccionario,
@@ -56,7 +67,7 @@ export default function Modal(props) {
     };
 
     const handleDataPreclasificacion = async () => {
-       
+
         try {
             const response = await axios.get(`${API_URL}get_curso_precla`,
                 config
@@ -71,33 +82,33 @@ export default function Modal(props) {
     };
 
     const handleAccept = () => {
-       handleDataRuc()
-       close()
+        handleDataRuc()
+        close()
     };
 
     const handleOption = (valor) => {
         setOption(valor);
-        if(valor === false){
+        if (valor === false) {
             handleDataRuc()
             close()
         }
     };
 
-    const handleComentarios = ({target}) => {
+    const handleComentarios = ({ target }) => {
         const { name, value } = target;
         setComentarios(value)
-       
-     };
+
+    };
 
     return (
         <>
             <Dialog
                 open={open}
                 onClose={close}
-                fullWidth={fullWidth}
-                maxWidth={maxWidth}
+                maxWidth="lg"
+                fullWidth
             >
-                <DialogTitle id="alert-dialog-title">
+                <DialogTitle>
                     {"Sugerencia de modelo de preclasificación"}
                 </DialogTitle>
                 <IconButton
@@ -117,19 +128,27 @@ export default function Modal(props) {
 
                         <Grid container >
                             <Grid item xs={6}>
-                                <Button variant="contained" /* onClick={() => handleOption(false)}  */>Descargar</Button>
+                                {/* <Button variant="contained">Descargar</Button> */}
+                               { dataEspecifica &&
                                 <TextField
-                                  
                                     label="Relato de la victima"
                                     variant="outlined"
                                     multiline
                                     disabled
                                     value={dataEspecifica?.relato}
                                     sx={{ width: " 90%", mt: 2, mb: 2 }}
-                                />
+                                /> }
+                              {/*   <TextField
+                                    id="outlined-multiline-static"
+                                    label="Relato de la Victima"
+                                    multiline
+                                    defaultValue={dataEspecifica?.relato}
+                                    variant="outlined"
+                                    disabled
+                                /> */}
                                 <Stack direction="row" spacing={1}>
-                                <Chip label={dataEspecifica?.entidades[0]} color="primary" />
-                                    
+                                    <Chip label={dataEspecifica?.entidades[0]} color="primary" />
+
                                 </Stack>
 
                                 <TextField
@@ -143,13 +162,17 @@ export default function Modal(props) {
                             </Grid>
                             <Divider orientation="vertical" flexItem />
                             <Grid item xs={5} sx={{ maxHeight: "400px", marginLeft: "3%" }}>
-                                <Alert severity="info" sx={{ mt: 2, mb: 2, width: " 100%" }}>Se espera que esta sección usted pueda seleccionar el modelo predictivo que más concuerde con su causa...</Alert>
+                                <Alert severity="info">
+                                    <AlertTitle>Información</AlertTitle>
+                                    Se espera que en esta sección usted pueda seleccionar el modelo predictivo que más concuerde con su causa
+                                </Alert>
+                                {/*  <Alert severity="info" sx={{ mt: 2, mb: 2, width: " 100%" }}>Se espera que esta sección usted pueda seleccionar el modelo predictivo que más concuerde con su causa...</Alert> */}
                                 <TextField
                                     id="outlined-basic"
                                     label="Sugerencia de preclasificación"
                                     variant="outlined"
                                     disabled
-                                    sx={{ mb: 2, width: "100%" }}
+                                    sx={{ mb: 2, mt: 4, width: "100%" }}
                                     value={dataEspecifica?.sug_precla}
                                 />
 
@@ -170,7 +193,7 @@ export default function Modal(props) {
                                             value={preclasificaciónOption}
                                             onChange={(event, newValue) => {
                                                 setPreclasificacionOption(newValue);
-                                              }}
+                                            }}
 
                                         />
 
@@ -197,7 +220,7 @@ export default function Modal(props) {
                         </Grid>
                     </DialogContentText>
                 </DialogContent>
-     {/*    <DialogActions>
+                {/*    <DialogActions>
           <Button onClick={close} variant="outlined">Cancelar</Button>
           <Button onClick={handleAccept} autoFocus variant="contained">
             Aceptar
