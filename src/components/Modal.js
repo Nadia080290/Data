@@ -12,7 +12,11 @@ import Stack from '@mui/material/Stack';
 import Chip from '@mui/material/Chip';
 import { API_URL } from '../api';
 import axios from 'axios';
+import Slide from '@mui/material/Slide';
 
+const Transition = React.forwardRef(function Transition(props, ref) {
+    return <Slide direction="up" ref={ref} {...props} />;
+  });
 
 export default function Modal(props) {
 
@@ -25,39 +29,25 @@ export default function Modal(props) {
     const [comentarios, setComentarios] = React.useState("")
     const [dataEspecifica, setDataEspecifica] = React.useState(null)
 
-  /*   useEffect(() => {
+  useEffect(() => {
         if (open) {
-           /*  setTimeout(() => {
-                window.dispatchEvent(new Event('resize'));
-            }, 2000); 
-           const observer = new ResizeObserver(() => {
-        try {
-          // No necesitas hacer nada aquí si no estás ajustando manualmente el tamaño.
-        } catch (error) {
-          console.error('Error en ResizeObserver:', error);
+        const observer = new ResizeObserver(() => {
+                try {
+                } catch (error) {
+                  console.warn('Error en ResizeObserver:', error);
+                }
+              });
+              console.log(observer)
         }
-      });
-        }
-    }, [open]); */
+    }, [open, close]);
 
     
 
     useEffect(() => {
         if (data != "") {
             handleDataPreclasificacion()
-            const observer = new ResizeObserver(() => {
-                try {
-                } catch (error) {
-                  console.warn('Error en ResizeObserver:', error);
-                }
-              });
-            setDataEspecifica(data)
-            console.log(dataEspecifica)
-            console.log(observer)
-
-            
-        }
-        
+            setDataEspecifica(data)            
+        } 
     }, [data]);
 
 
@@ -123,7 +113,8 @@ export default function Modal(props) {
         <>
             <Dialog
                 open={open}
-                aria-labelledby="form-dialog-title"
+                keepMounted
+                onClose={close}
                 fullWidth={true}
                 maxWidth={"xl"}
             >
@@ -142,13 +133,14 @@ export default function Modal(props) {
                 >
                     <CloseIcon />
                 </IconButton>
+                { dataEspecifica &&
                 <DialogContent>
                     <DialogContentText id="alert-dialog-description">
 
                         <Grid container >
                             <Grid item xs={6}>
                                 {/* <Button variant="contained">Descargar</Button> */}
-                               { dataEspecifica &&
+                              
                                 <TextField
                                     label="Relato de la victima"
                                     variant="outlined"
@@ -156,7 +148,7 @@ export default function Modal(props) {
                                     disabled
                                     value={dataEspecifica?.relato}
                                     sx={{ width: " 90%", mt: 2, mb: 2 }}
-                                /> }
+                                /> 
                                 <Stack direction="row" spacing={1}>
                                     <Chip label={dataEspecifica?.entidades[0]} color="primary" />
 
@@ -230,13 +222,8 @@ export default function Modal(props) {
                             </Grid>
                         </Grid>
                     </DialogContentText>
-                </DialogContent>
-                {/*    <DialogActions>
-          <Button onClick={close} variant="outlined">Cancelar</Button>
-          <Button onClick={handleAccept} autoFocus variant="contained">
-            Aceptar
-          </Button>
-        </DialogActions>  */}
+                </DialogContent>}
+         
             </Dialog>
         </>
     );
