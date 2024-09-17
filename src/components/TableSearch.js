@@ -161,9 +161,7 @@ EnhancedTableToolbar.propTypes = {
 export default function TableSearch(props) {
 
   const {data,fiscaliaService, token} = props
-  console.log(data, "en la tabla")
   const [dataTabla, setDataTabla] = React.useState(data ? data : [])
-  console.log(dataTabla,"tenemos dataaa")
   const [order, setOrder] = React.useState('asc');
   const [orderBy, setOrderBy] = React.useState('calories');
   const [selected, setSelected] = React.useState([]);
@@ -174,12 +172,12 @@ export default function TableSearch(props) {
   const [causaElegida, setDataCausasElegida] = React.useState("");
 
 
- /*   useEffect(() => {
+  useEffect(() => {
         if (data.length >= 0) {
           setDataTabla(data)
         }
-    }, [data]); */
- 
+  }, [data]);
+
 
   const handleClickOpen = (row) => {
     setDataCausasElegida(row)
@@ -226,7 +224,7 @@ export default function TableSearch(props) {
         page * rowsPerPage,
         page * rowsPerPage + rowsPerPage,
       ),
-    [order, orderBy, page, rowsPerPage],
+    [order, orderBy, page, rowsPerPage, dataTabla],
   );
 
   return (
@@ -251,7 +249,7 @@ export default function TableSearch(props) {
               
             />
             <TableBody>
-              {visibleRows.map((row, index) => {
+              { dataTabla.length != 0 ? visibleRows.map((row, index) => {
                 const isItemSelected = isSelected(row.id);
                 const labelId = `enhanced-table-checkbox-${index}`;
 
@@ -280,7 +278,9 @@ export default function TableSearch(props) {
                     <TableCell align="right"><AnalyticsIcon sx={{color: "#FA7900"}} onClick={() =>handleClickOpen(row)}/></TableCell>
                   </TableRow>
                 );
-              })}
+              }) :  <TableCell >
+              No existe coincidencias con la busqueda
+              </TableCell>}
               {emptyRows > 0 && (
                 <TableRow
                   style={{
@@ -288,6 +288,7 @@ export default function TableSearch(props) {
                   }}
                 >
                   <TableCell colSpan={6} />
+                 
                 </TableRow>
               )}
             </TableBody>

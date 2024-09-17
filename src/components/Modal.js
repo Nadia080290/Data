@@ -25,18 +25,37 @@ export default function Modal(props) {
     const [comentarios, setComentarios] = React.useState("")
     const [dataEspecifica, setDataEspecifica] = React.useState(null)
 
-    useEffect(() => {
+  /*   useEffect(() => {
         if (open) {
-            setTimeout(() => {
+           /*  setTimeout(() => {
                 window.dispatchEvent(new Event('resize'));
-            }, 3000);
+            }, 2000); 
+           const observer = new ResizeObserver(() => {
+        try {
+          // No necesitas hacer nada aquí si no estás ajustando manualmente el tamaño.
+        } catch (error) {
+          console.error('Error en ResizeObserver:', error);
         }
-    }, [open]);
+      });
+        }
+    }, [open]); */
+
+    
 
     useEffect(() => {
         if (data != "") {
             handleDataPreclasificacion()
+            const observer = new ResizeObserver(() => {
+                try {
+                } catch (error) {
+                  console.warn('Error en ResizeObserver:', error);
+                }
+              });
             setDataEspecifica(data)
+            console.log(dataEspecifica)
+            console.log(observer)
+
+            
         }
         
     }, [data]);
@@ -104,9 +123,9 @@ export default function Modal(props) {
         <>
             <Dialog
                 open={open}
-                onClose={close}
-                maxWidth="lg"
-                fullWidth
+                aria-labelledby="form-dialog-title"
+                fullWidth={true}
+                maxWidth={"xl"}
             >
                 <DialogTitle>
                     {"Sugerencia de modelo de preclasificación"}
@@ -138,14 +157,6 @@ export default function Modal(props) {
                                     value={dataEspecifica?.relato}
                                     sx={{ width: " 90%", mt: 2, mb: 2 }}
                                 /> }
-                              {/*   <TextField
-                                    id="outlined-multiline-static"
-                                    label="Relato de la Victima"
-                                    multiline
-                                    defaultValue={dataEspecifica?.relato}
-                                    variant="outlined"
-                                    disabled
-                                /> */}
                                 <Stack direction="row" spacing={1}>
                                     <Chip label={dataEspecifica?.entidades[0]} color="primary" />
 

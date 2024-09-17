@@ -12,10 +12,9 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { Button, CircularProgress, FormControl, InputLabel, MenuItem, Select, Typography } from '@mui/material';
 import { API_URL } from '../api';
 import axios from 'axios';
-import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker'
-import TableSearchCausas from './TableSearchCausas';
-import { TableSearchGeneral } from './TableSearchGeneral';
+
+
 
 
 
@@ -28,9 +27,10 @@ const Item = styled(Paper)(({ theme }) => ({
 }));
 
 
+
 export default function Search(props) {
 
-    const {token, fiscaliaService } = props
+    const { token, fiscaliaService } = props
     const [value, setValue] = React.useState(null);
     const [ruc, setRuc] = useState("")
     const [grupoDelitos, setGrupoDelitos] = useState([])
@@ -39,11 +39,27 @@ export default function Search(props) {
     const [estadosOption, setEstadosOption] = useState("")
     const [fecha, setFecha] = useState("")
     const [dataCausas, setDataCausas] = useState("")
+    const [cleared, setCleared] = React.useState(false);
 
+    const [dataTabla, setDataTabla] = React.useState([])
+    console.log(dataTabla, "tenemos dataaa")
     const config = {
         headers: { Authorization: `Bearer ${token}` },
     }
-   
+
+    useEffect(() => {
+           if (cleared === true) {
+             setFecha("")
+           }
+     }, [cleared]);
+
+  /*    useEffect(() => {
+        if (data.length >= 0) {
+          setDataTabla(data)
+        }
+  }, [data]); */
+
+
     useEffect(() => {
         if (token !== '') {
             handleDataEstados()
@@ -53,22 +69,23 @@ export default function Search(props) {
     }, [token]);
 
     const handleTableDate = async () => {
-        const fiscalia ={
-          fiscalia: fiscaliaService
+        const fiscalia = {
+            fiscalia: fiscaliaService
         }
         try {
-          const response = await axios.post(`${API_URL}get_causas`, fiscalia, {
-            headers: {
-              Authorization: `Bearer ${token}` 
-          },
-        });
-          const data = response.data;
-          setDataCausas(data)
-         
+            const response = await axios.post(`${API_URL}get_causas`, fiscalia, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                },
+            });
+            const data = response.data;
+            setDataCausas(data)
+            setDataTabla(data)
+
         } catch (error) {
-          console.log("falle")
+            console.log("falle")
         }
-      };
+    };
 
 
 
@@ -97,15 +114,15 @@ export default function Search(props) {
             console.log("falle")
         }
     };
-    
+
 
     const handleSearchTable = async () => {
         const dataSearch = {
             fiscalia: fiscaliaService,
-            grupo_delitos: grupoDelitosOption,
+            grupo_delito: grupoDelitosOption,
             estado: estadosOption,
             fecha: fecha,
-    
+            ruc: ruc,
         }
         console.log(dataSearch)
         try {
@@ -116,6 +133,7 @@ export default function Search(props) {
             });
             const data = response.data;
             setDataCausas(data)
+            setDataTabla(data)
             console.log(data, "SOY la respuesta!!")
 
         } catch (error) {
@@ -130,18 +148,17 @@ export default function Search(props) {
     }
     const handleChangeRuc = ({ target }) => {
         const { name, value } = target;
-         setRuc(value)
-  
+        setRuc(value)
+
     }
     const handleChangeFecha = (newValue) => {
         console.log(newValue)
         setValue(newValue)
         const fechaFormato = dayjs(newValue).format("YYYY-MM-DD")
         setFecha(fechaFormato)
-        
- 
-     }
 
+
+    }
 
     return (
 
@@ -170,14 +187,26 @@ export default function Search(props) {
                         value={grupoDelitosOption}
                         onChange={(event, newValue) => {
                             setGrupoDelitosOption(newValue);
-                          }}
+                        }}
                         sx={{ width: "100%" }}
                         renderInput={(params) => <TextField {...params} label="Grupo de delito" />}
 
                     />
                 </Grid>
                 <Grid item xs={2}>
-                    <FormControl variant="outlined" sx={{ width: "100%" }}>
+                <Autocomplete
+                        disablePortal
+                        id="combo-box-demo"
+                        options={estados}
+                        value={estadosOption}
+                        onChange={(event, newValue) => {
+                            setEstadosOption(newValue);
+                        }}
+                        sx={{ width: "100%" }}
+                        renderInput={(params) => <TextField {...params} label="Estados" />}
+
+                    />
+                   {/*  <FormControl variant="outlined" sx={{ width: "100%" }}>
                         <InputLabel id="demo-simple-select-outlined-label">Estados</InputLabel>
                         <Select
                             labelId="demo-simple-select-outlined-label"
@@ -192,7 +221,7 @@ export default function Search(props) {
                                 return (<MenuItem value={item}>{item}</MenuItem>)
                             })}
                         </Select>
-                    </FormControl>
+                    </FormControl> */}
                 </Grid>
                 <Grid item xs={2}>
                     <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -201,6 +230,9 @@ export default function Search(props) {
                             label="Fecha"
                             value={value}
                             onChange={handleChangeFecha}
+                            slotProps={{
+                                field: { clearable: true, onClear: () => setCleared(true) },
+                              }}
                         />
                     </LocalizationProvider>
                 </Grid>
@@ -213,11 +245,12 @@ export default function Search(props) {
                 </Grid>
             </Grid>
 
-          { dataCausas && 
-          <Box sx={{ display: 'flex' }}>
-          <CircularProgress />
-          </Box> &&
-          <TableSearch data={dataCausas} fiscaliaService={fiscaliaService} token={token}/> }
+            {dataCausas &&
+                <Box sx={{ display: 'flex' }}>
+                    <CircularProgress />
+                </Box> &&
+                <TableSearch data={dataCausas} fiscaliaService={fiscaliaService} token={token} />}
+
         </div>
 
     );
